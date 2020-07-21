@@ -288,7 +288,7 @@ c = Foo()
 c.run()
 ```
 
-## Step 10: Implement System Stack
+## Step 10: Implement System Stack ++++++++++++ DAY THREE +++++++++++++++++++++++++++++++++++++
 
 All CPUs manage a _stack_ that can be used to store information temporarily.
 This stack resides in main memory and typically starts at the top of memory (at
