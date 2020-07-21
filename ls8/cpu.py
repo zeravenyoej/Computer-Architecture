@@ -1,9 +1,4 @@
 import sys
-
-LDI = 0b10000010
-PRN = 0b01000111
-HLT = 0b00000001
-MUL = 0b10100010
 class CPU:
     """Main CPU class."""
 
@@ -13,25 +8,25 @@ class CPU:
         self.reg = [0] * 8
         self.pc = 0
         self.branchtable = {
-            LDI: self.handle_LDI,
-            PRN: self.handle_PRN,
-            HLT: self.handle_HLT,
-            MUL: self.handle_MUL
+            0b10000010: self.handle_LDI,
+            0b01000111: self.handle_PRN,
+            0b00000001: self.handle_HLT,
+            0b10100010: self.handle_MUL
         }
 
-    def handle_LDI(self, operand_a, operand_b):
-        self.reg[operand_a] = operand_b
+    def handle_LDI(self, op_a, op_b):
+        self.reg[op_a] = op_b
         self.pc +=3
 
-    def handle_PRN(self, operand_a, operand_b):
-        print(self.reg[operand_a])
+    def handle_PRN(self, op_a, op_b):
+        print(self.reg[op_a])
         self.pc +=2
 
-    def handle_HLT(self, operand_a, operand_b):
+    def handle_HLT(self, op_a, op_b):
         exit()
 
-    def handle_MUL(self, operand_a, operand_b):
-        self.reg[operand_a] = self.reg[operand_a] * self.reg[operand_b]
+    def handle_MUL(self, op_a, op_b):
+        self.reg[op_a] = self.reg[op_a] * self.reg[op_b]
         self.pc +=3
 
     def load(self):
@@ -85,12 +80,11 @@ class CPU:
         """Run the CPU."""
         while True:
             IR = self.ram_read(self.pc)
-            operand_a = self.ram_read(self.pc + 1)
-            operand_b = self.ram_read(self.pc + 2)
+            op_a, op_b = self.ram_read(self.pc + 1), self.ram_read(self.pc + 2)
 
             if IR not in self.branchtable:
                 print(f"could not find instruction {IR}")
                 self.trace()
                 exit()
             
-            self.branchtable[IR](operand_a, operand_b)
+            self.branchtable[IR](op_a, op_b)
