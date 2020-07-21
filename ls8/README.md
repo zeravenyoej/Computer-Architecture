@@ -154,7 +154,7 @@ the LS-8 spec.
 *At this point, you should be able to run the program and have it print `8` to
 the console!*
 
-## Step 7: Un-hardcode the machine code
+## Step 7: ++++++++++++++++++++ Un-hardcode the machine code DAY TWO STARTS HERE ++++++++++++++++++++++++++++
 
 In `cpu.py`, the LS-8 programs you've been running so far have been hardcoded
 into the source. This isn't particularly user-friendly.

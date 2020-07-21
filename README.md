@@ -1,4 +1,4 @@
-pull request:  
+pull request: https://github.com/zeravenyoej/Computer-Architecture/pull/1
 # Computer Architecture
 
 ## Project
