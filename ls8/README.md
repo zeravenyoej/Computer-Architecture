@@ -310,7 +310,7 @@ If you run `python3 ls8.py examples/stack.ls8` you should see the output:
 1
 ```
 
-## Step 11: Implement Subroutine Calls
+## Step 11: Implement Subroutine Calls ++++++++++++ DAY FOUR +++++++++++++++++++++++++++++++++++++
 
 Back in the old days, functions were called _subroutines_. In machine code,
 subroutines enable you to jump to any address with the `CALL` instruction, and
