@@ -26,10 +26,7 @@ class CPU:
     def ram_write(self, MDR, MAR):
         self.ram[MAR] = MDR
     
-    def RET(self, op_a, op_b):
-        # Return from subroutine.
-        # Pop the value from the top of the stack and store it in the `PC`.
-        
+    def RET(self, op_a, op_b):        
         # get variable for stack pointer for readability
         sp = self.registers[7]
         # get return index by figuring out where the stack pointer actually is in RAM
@@ -86,13 +83,22 @@ class CPU:
 
     def HLT(self, op_a, op_b):
         exit()
+    
+    def alu(self, op, reg_a, reg_b):
+        """ALU operations."""
+        if op == "ADD":
+            self.registers[reg_a] += self.registers[reg_b]
+        elif op == "MULT":
+            self.registers[reg_a] = self.registers[reg_a] * self.registers[reg_b]
+        else:
+            raise Exception("Unsupported ALU operation")
 
     def MUL(self, op_a, op_b):
-        self.registers[op_a] = self.registers[op_a] * self.registers[op_b]
+        self.alu("MULT", op_a, op_b)
         self.pc +=3
         
     def ADD(self, op_a, op_b):
-        self.registers[op_a] = self.registers[op_a] + self.registers[op_b]
+        self.alu("ADD", op_a, op_b)
         self.pc +=3
 
     def load(self):
@@ -107,14 +113,6 @@ class CPU:
                     continue
                 self.ram[address] = v
                 address +=1
-
-    def alu(self, op, reg_a, reg_b):
-        """ALU operations."""
-        if op == "ADD":
-            self.registers[reg_a] += self.registers[reg_b]
-        #elif op == "SUB": etc
-        else:
-            raise Exception("Unsupported ALU operation")
 
     def trace(self):
         """
