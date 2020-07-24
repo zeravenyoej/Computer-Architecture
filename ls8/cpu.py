@@ -8,6 +8,11 @@ class CPU:
         self.registers = [0] * 8
         self.registers[7] = 0xF4
         self.pc = 0
+        self.FL = {
+            'E': 0,
+            'L': 0,
+            'G': 0,
+        }
         self.branchtable = {
             0b10000010: self.LDI,
             0b01000111: self.PRN,
@@ -17,7 +22,11 @@ class CPU:
             0b01000101: self.PUSH,
             0b01010000: self.CALL,
             0b00010001: self.RET,
-            0b10100000: self.ADD
+            0b10100000: self.ADD,
+            0b01010100: self.JMP,
+            0b10100111: self.CMP,
+            0b01010101: self.JEQ,
+            0b01010110: self.JNE
         }
 
     def ram_read(self, MAR):
@@ -26,6 +35,44 @@ class CPU:
     def ram_write(self, MDR, MAR):
         self.ram[MAR] = MDR
     
+    def JMP(self, op_a, op_b): 
+        # the JMP instruction comes with a corresponding register number. read what's next
+        reg_num = op_a
+        # read what value is in that register number currently. instead of a value,
+        # we treat this as an address to jump to in ram
+        jmp_to_this_i = self.registers[reg_num]
+        # update the pc to this address in ram. we're now jumping over parts of the program
+        self.pc = jmp_to_this_i
+
+        # I don't fully understand why this doesn't work 
+        #  self.pc = self.ram[jmp_to_this_i]
+    def JEQ(self, op_a, op_b): 
+        # If r1 and r2 are equal, jump. otherwise, just keep going
+        if self.FL["E"] == 1:
+            reg_num = op_a
+            jmp_to_this_i = self.registers[reg_num]
+            # self.pc = self.ram[jmp_to_this_i]
+            self.pc = jmp_to_this_i
+            
+            # I don't fully understand why this doesn't work 
+            # self.JMP(op_a, op_b)
+        else:
+            self.pc += 2
+
+    def CMP(self, op_a, op_b): 
+        # compare r1 and r2 and update flags. then keep going
+        self.alu("COMP", op_a, op_b)
+        self.pc += 3
+
+    def JNE(self, op_a, op_b): 
+        # If r1 and r2 are NOT equal, jump. otherwise, just keep going
+        if self.FL["E"] == 0:
+            reg_num = op_a
+            jmp_to_this_i = self.registers[reg_num]
+            self.pc = jmp_to_this_i
+        else:
+            self.pc += 2
+
     def RET(self, op_a, op_b):        
         # get variable for stack pointer for readability
         sp = self.registers[7]
@@ -90,6 +137,19 @@ class CPU:
             self.registers[reg_a] += self.registers[reg_b]
         elif op == "MULT":
             self.registers[reg_a] = self.registers[reg_a] * self.registers[reg_b]
+        elif op == "COMP":
+            if self.registers[reg_a] < self.registers[reg_b]:
+                self.FL['E'] = 0
+                self.FL['L'] = 1
+                self.FL['G'] = 0
+            elif self.registers[reg_a] > self.registers[reg_b]:
+                self.FL['E'] = 0
+                self.FL['L'] = 0
+                self.FL['G'] = 1
+            else:
+                self.FL['E'] = 1
+                self.FL['L'] = 0
+                self.FL['G'] = 0 
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -121,7 +181,7 @@ class CPU:
         """
         print(f"TRACE: %02X | %02X %02X %02X |" % (
             self.pc,
-            #self.fl,
+            # self.FL,
             #self.ie,
             self.ram_read(self.pc),
             self.ram_read(self.pc + 1),
@@ -129,7 +189,7 @@ class CPU:
         ), end='')
 
         for i in range(8):
-            print(" %02X" % self.registers[i], end='')
+            print("%02X " % self.registers[i], end='')
 
         print()
 
